@@ -134,7 +134,7 @@ public interface UserControllerDocs {
 
     @Operation(
       summary = "회원가입",
-      description = "서비스(type=\"1\" · 이메일 · 이름 · 타입(type=\"1\") 으로 회원가입을 완료합니다.",
+      description = "서비스(프로그램=\"1\" · 이메일 · 이름 · 타입(type=\"1\") 으로 회원가입을 완료합니다.",
       responses = {
         @ApiResponse(responseCode = "200", description = "가입 성공",
           content = @Content(
