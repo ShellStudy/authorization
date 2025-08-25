@@ -22,6 +22,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.java.domain.role.RoleEntity;
 import com.java.domain.role.RoleRepository;
+import com.java.domain.role.RoleUserEntity;
+import com.java.domain.role.RoleUserRepository;
 import com.java.domain.user.UserEntity;
 import com.java.domain.user.UserRepository;
 import com.java.dto.AuthReqDTO;
@@ -56,6 +58,7 @@ public class UserServiceImp implements UserService {
   
   private final UserRepository userRepository;
   private final RoleRepository roleRepository;
+  private final RoleUserRepository roleUserRepository;
   private final BCryptPasswordEncoder passwordEncoder;
   private final FileService fileService;
   private final JwtEncoder jwtEncoder;
@@ -152,21 +155,33 @@ public class UserServiceImp implements UserService {
   public ResDTO signUp(UserReqDTO userDto) {
     boolean status = false;
     String message = "정상적으로 가입이 되지 않았습니다.";
-    // RoleEntity roleEntity = roleRepository.findById(2L).orElseThrow(() -> new RuntimeException("존재하지 않는 권한 입니다."));
+    // RoleEntity roleEntity = roleRepository.findById(userDto.getService()).orElseThrow(() -> new RuntimeException("존재하지 않는 권한 입니다."));
     UserEntity userEntity = UserEntity.builder()
         .email(userDto.getEmail())
-        .password(passwordEncoder.encode(userDto.getPassword()))
+        // .password(passwordEncoder.encode(userDto.getPassword()))
         .name(userDto.getName())
         .build();
     userEntity.setUseYn(USEYN);
     log.info("============================================================================================================");
     log.info("USER : {}", userEntity);
-    // userEntity.setRoles(Set.of(roleEntity));
+    // userEntity.setRole(Set.of(roleEntity));
     userEntity = userRepository.save(userEntity);
     log.info("USER : {}", userEntity);
     if(userEntity.getNo() > 0) {
       userEntity.setRegUserNo(userEntity.getNo());
       userRepository.save(userEntity);
+
+      RoleUserEntity roleUserEntity = RoleUserEntity.builder()
+        .roleNo(userDto.getService())
+        .userNo(userEntity.getNo())
+        .build();
+
+      roleUserEntity.setUseYn(USEYN);
+      roleUserEntity.setRegUserNo(userEntity.getNo());
+      log.info("ROLE_USER : {}", roleUserEntity);
+
+      roleUserRepository.save(roleUserEntity);
+
       status = true;
       message = "정상적으로 가입이 되었습니다.";
     }

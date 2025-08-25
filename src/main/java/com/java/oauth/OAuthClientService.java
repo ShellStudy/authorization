@@ -42,7 +42,7 @@ public class OAuthClientService {
         .withId(user.getNo().toString())
         .clientId(user.getEmail())
         .clientName(user.getName())
-        .clientSecret(user.getPassword())
+        .clientSecret(user.getName())
         .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_POST)
         .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
         .redirectUri(redirectUrl)

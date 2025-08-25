@@ -134,7 +134,7 @@ public interface UserControllerDocs {
 
     @Operation(
       summary = "회원가입",
-      description = "이메일 · 이름 · 타입(type=\"1\") 으로 회원가입을 완료합니다.",
+      description = "서비스(type=\"1\" · 이메일 · 이름 · 타입(type=\"1\") 으로 회원가입을 완료합니다.",
       responses = {
         @ApiResponse(responseCode = "200", description = "가입 성공",
           content = @Content(
@@ -166,15 +166,15 @@ public interface UserControllerDocs {
     @PutMapping
     ResDTO signUp(
       @RequestBody(
-        description = "회원가입 정보 (email, name, type)",
+        description = "회원가입 정보 (service, email, name, type)",
         required = true,
         content = @Content(
           schema = @Schema(implementation = UserReqDTO.class),
           examples = @ExampleObject(
             name = "회원가입 요청 예시",
             value = "{\n" +
+              "  \"service\": \"1\",\n" +
               "  \"email\": \"newuser@example.com\",\n" +
-              "  \"password\": \"비밀번호\",\n" +
               "  \"name\": \"새사용자\",\n" +
               "  \"type\": \"1\"\n" +
               "}"
