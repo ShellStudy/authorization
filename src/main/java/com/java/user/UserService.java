@@ -15,6 +15,7 @@ public interface UserService {
   public ResDTO userInfo(Authentication authentication);
   public ResDTO signIn(AuthReqDTO authReqDTO, HttpServletRequest request, HttpServletResponse response, HttpSession session);
   public ResDTO signUp(UserReqDTO userDto);
+  public ResDTO delete(Long no);
   public ResDTO modify(Long no, UserInfoReqDTO userInfoReqDTO, Authentication authentication);
   public ResDTO email(UserReqDTO userDto);
   public ResDTO auth(AuthReqDTO authReqDTO);

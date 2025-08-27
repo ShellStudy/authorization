@@ -14,5 +14,6 @@ import org.springframework.web.multipart.MultipartFile;
 public class UserInfoReqDTO {
 
   private MultipartFile file;
+  private String name;
 
 }

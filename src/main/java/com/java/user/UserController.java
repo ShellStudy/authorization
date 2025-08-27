@@ -36,6 +36,12 @@ public class UserController implements UserControllerDocs {
   public ResDTO signUp(@RequestBody @Valid UserReqDTO userDto) {
     return userService.signUp(userDto);
   }
+  
+  @PreAuthorize("isAuthenticated()")
+  @DeleteMapping("/{no:[0-9]+}")
+  public ResDTO delete(@PathVariable("no") Long no) {
+    return userService.delete(no);
+  }
 
   @PreAuthorize("isAuthenticated()")
   @PatchMapping("/{no:[0-9]+}")

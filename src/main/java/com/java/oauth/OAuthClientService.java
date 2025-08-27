@@ -31,8 +31,8 @@ public class OAuthClientService {
   }
 
   public RegisteredClient findByClientId(String clientId) {
-    UserEntity oAuthClient = userRepository.findByEmailAndUseYn(clientId, 'Y')
-      .orElseThrow(() -> new IllegalArgumentException(msg + clientId));
+    UserEntity oAuthClient = userRepository.findByEmailAndUseYn(clientId, 'Y');
+      // .orElseThrow(() -> new IllegalArgumentException(msg + clientId));
     return loadClientByResult(oAuthClient);
   }
 

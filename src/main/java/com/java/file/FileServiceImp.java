@@ -116,8 +116,9 @@ public class FileServiceImp implements FileService {
   @Override
   public ResponseEntity<?> uri(String type, Long fileNo, Authentication authentication) {
     FileEntity fileInfo = fileRepository.findByNoAndUseYn(fileNo, 'Y').orElseThrow(() -> new RuntimeException("존재하지 않는 파일 입니다."));
-    if(authentication != null) return getFile(fileInfo);
-    return ResponseEntity.notFound().build();
+    // if(authentication != null) 
+    return getFile(fileInfo);
+    // return ResponseEntity.notFound().build();
   }
 
   @Override

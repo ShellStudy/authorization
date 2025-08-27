@@ -91,7 +91,7 @@ public class SecurityConfig {
       });
       http.authorizeHttpRequests(r -> {
           r.requestMatchers(HttpMethod.GET,"/","/.well-known/jwks.json").permitAll();
-          r.requestMatchers("/user/**").permitAll();
+          r.requestMatchers("/user/**", "/file/**").permitAll();
           r.requestMatchers("/docs","/v3/**","/swagger-ui/**").permitAll();
           r.anyRequest().authenticated();
       });
@@ -107,7 +107,7 @@ public class SecurityConfig {
       config.addAllowedOriginPattern("*");
       config.addAllowedHeader("*");
       config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
-      // config.setAllowCredentials(true);
+      config.setAllowCredentials(true);
       UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
       source.registerCorsConfiguration("/**", config);
       return source;

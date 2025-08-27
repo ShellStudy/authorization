@@ -5,7 +5,8 @@ import lombok.*;
 
 import java.util.HashSet;
 import java.util.Set;
-
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.java.domain.BaseEntity;
 import com.java.domain.role.RoleEntity;
 import com.java.domain.role.RoleUserEntity;

@@ -95,6 +95,7 @@ public class UserServiceImp implements UserService {
     boolean status = false;
     String message = "존재하지 않는 사용자 입니다.";
     String roles = null;
+    String access_token = null;
     try {
       List<KeyDTO> KEYS2 = new ArrayList<>();
       String email = null;
@@ -120,7 +121,7 @@ public class UserServiceImp implements UserService {
           }
         }
       } else {
-        UserEntity userEntity = userRepository.findByEmailAndUseYn(email, USEYN).orElseThrow(() -> new RuntimeException("존재하지 않는 사용자 입니다."));
+        UserEntity userEntity = userRepository.findByEmailAndUseYn(email, USEYN); //.orElseThrow(() -> new RuntimeException("존재하지 않는 사용자 입니다."));
         UserDTO userDTO = UserDTO.findByUser(userEntity); // "RoleUser" 테이블 useYn 확인 후 DTO 생성
         Set<String> arr = new HashSet<>();
         userDTO.getRoles().forEach(d -> arr.add(d.getName()));
@@ -134,10 +135,10 @@ public class UserServiceImp implements UserService {
             .claim("userNo", userDTO.getNo())
             .build();
         JwtEncoderParameters parameters = JwtEncoderParameters.from(claimsSet);
-        String access_token = jwtEncoder.encode(parameters).getTokenValue();
+        access_token = jwtEncoder.encode(parameters).getTokenValue();
         Cookie cookie = new Cookie("access_token", access_token);
         // cookie.setHttpOnly(true);
-        //      cookie.setSecure(true);
+        // cookie.setSecure(true);
         cookie.setPath("/");
         cookie.setMaxAge(session.getMaxInactiveInterval());
         response.addCookie(cookie);
@@ -147,7 +148,7 @@ public class UserServiceImp implements UserService {
     } catch (Exception e) {
       message = e.getMessage();
     }
-    return ResDTO.builder().status(status).result(roles).message(message).build();
+    return ResDTO.builder().status(status).result(access_token).message(message).build();
   }
 
   @Transactional
@@ -190,6 +191,22 @@ public class UserServiceImp implements UserService {
 
   @Transactional
   @Override
+  public ResDTO delete(Long no) {
+    boolean status = false;
+    String message = "정상적으로 탈퇴 되지 않았습니다.";
+    UserEntity userEntity = userRepository.findById(no).orElseThrow(() -> new RuntimeException("존재하지 않는 사용자 입니다."));
+    userEntity.setModUserNo(userEntity.getNo());
+    userEntity.setUseYn('N');
+    userEntity = userRepository.save(userEntity);
+    if(userEntity.getNo() > 0) {
+      status = true;
+      message = null;
+    }
+    return ResDTO.builder().status(status).message(message).build();
+  }
+
+  @Transactional
+  @Override
   public ResDTO modify(Long no, UserInfoReqDTO userInfoReqDTO, Authentication authentication) {
     boolean status = false;
     String message = "정상적으로 수정 되지 않았습니다.";
@@ -204,6 +221,7 @@ public class UserServiceImp implements UserService {
       }
     }
     userEntity.setModUserNo(Long.parseLong(authentication.getName()));
+    userEntity.setName(userInfoReqDTO.getName());
     userEntity = userRepository.save(userEntity);
     if(userEntity.getNo() > 0) {
       status = true;
@@ -212,6 +230,7 @@ public class UserServiceImp implements UserService {
     return ResDTO.builder().status(status).message(message).build();
   }
 
+  @Transactional
   @Override
   public ResDTO email(UserReqDTO userDto) {
     boolean status = false;
@@ -225,20 +244,30 @@ public class UserServiceImp implements UserService {
       }
     }
     KEYS = KEYS2;
-    KEYS.forEach(System.out::println);
+    // KEYS.forEach(System.out::println);
 
     UserEntity userEntity = userRepository.findByEmail(userDto.getEmail());
     if( "1".equals(userDto.getType()) ) {
       if (userEntity == null) {
-        // 회원가입 로직 동작
+        // 회원가입 신규 로직 동작
         status = setKey(userDto.getEmail());
         message = "";
+      } else {
+        // 또 왔니?
+        userEntity.setUseYn('Y');
+        userEntity.setModUserNo(userEntity.getNo());
+        userEntity = userRepository.save(userEntity);
+        message = userEntity.getName() + "님 다시 오셨군요!!";
       }
     } else {
       if (userEntity != null) {
-        // 로그인 로직 동작
-        status = setKey(userDto.getEmail());
-        message = "";
+        if("Y".equals(String.valueOf(userEntity.getUseYn()))) {
+          // 로그인 로직 동작
+          status = setKey(userDto.getEmail());
+          message = "";
+        } else {
+          message = "비활성화된 이메일 주소 입니다.";
+        }
       } else {
         message = "존재하지 않는 이메일 주소입니다.";
       }

@@ -26,7 +26,7 @@ public class FileController implements FileControllerDocs {
     return fileService.upload(file, authentication);
   }
 
-  @PreAuthorize("isAuthenticated()")
+  // @PreAuthorize("isAuthenticated()")
   @GetMapping("/{type:[iu]}/{no:[0-9]+}")
   public ResponseEntity<?> uri(@PathVariable("type") String type, @PathVariable("no") Long no, Authentication authentication) {
     return fileService.uri(type, no, authentication);
